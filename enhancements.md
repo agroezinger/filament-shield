@@ -51,6 +51,7 @@ if ($this->canShield('insertSick')) {
 @if($this->canShield('editAllSettings'))
     <x-filament::input wire:model="settings.global_value" />
 @endif
+```
 
 ## Extension: Contextual Permission Injection for Child Components
 
@@ -71,6 +72,7 @@ Instead of checking permissions individually in the view, you can now pass the e
 @livewire('your-component', [
     'permissions' => $this->getShieldPermissions()
 ])
+```
 
 ```php
 use BezhanSalleh\FilamentShield\Traits\HasInjectedShieldPermissions;
@@ -90,8 +92,10 @@ class HolidayActionModal extends Component
         // Logic for saving...
     }
 }
+```
 
 ```blade
 @livewire('holiday-action-modal', [
     'permissions' => $this->getShieldPermissions()
 ])
+```
