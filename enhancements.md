@@ -51,3 +51,47 @@ if ($this->canShield('insertSick')) {
 @if($this->canShield('editAllSettings'))
     <x-filament::input wire:model="settings.global_value" />
 @endif
+
+## Extension: Contextual Permission Injection for Child Components
+
+To ensure that the new fine-grained permissions are maintainable and flexible, this update introduces a **Top-Down Permission Injection** pattern. This allows parent Pages to pass their authorization state to nested Livewire components, ensuring that a component's capabilities are determined by the page it resides on.
+
+### 1. Permission Handover Helper (`HasPageShield` Trait)
+Added a new helper method `getShieldPermissions()` to the `HasPageShield` trait. This method automatically maps the permissions defined in the Page's `getShieldPagePermissions()` method into a boolean array based on the current user's rights.
+
+* **Benefit:** Eliminates the need to manually list or re-check permissions in Blade views.
+* **Consistency:** Ensures a single source of truth for all actions related to a specific page context.
+
+### 2. Implementation Pattern
+
+**Parent Page (Blade):**
+Instead of checking permissions individually in the view, you can now pass the entire authorized state to child components in one clean call:
+
+```blade
+@livewire('your-component', [
+    'permissions' => $this->getShieldPermissions()
+])
+
+```php
+use BezhanSalleh\FilamentShield\Traits\HasInjectedShieldPermissions;
+use Livewire\Component;
+
+class HolidayActionModal extends Component
+{
+    use HasInjectedShieldPermissions;
+
+    public function save()
+    {
+        // Use the injected state to authorize actions
+        if (! $this->canShield('canInsertSick')) {
+            return;
+        }
+
+        // Logic for saving...
+    }
+}
+
+```blade
+@livewire('holiday-action-modal', [
+    'permissions' => $this->getShieldPermissions()
+])
