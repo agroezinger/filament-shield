@@ -9,7 +9,7 @@ This pull request introduces **Fine-Grained Page Permissions** to Filament Shiel
 
 ### 1. Configuration & Namespacing
 * **Permission Prefix:** Added a new configuration key `pages.permission_prefix` (defaulting to `'page'`) to ensure page permissions are clearly distinguished from resource permissions in the database.
-* **Three-Part Convention:** Enforced a naming convention: `{Prefix}{Separator}{Action}{Separator}{Subject}` (e.g., `Page:InsertSick:HolidayMatrixTable`), strictly respecting the global `permissions.separator` and `permissions.case` settings.
+* **Three-Part Convention:** Enforced a naming convention: `{Prefix}{Separator}{Action}{Separator}{Subject}` (e.g., `Page:EditSettings:SamplePageName`), strictly respecting the global `permissions.separator` and `permissions.case` settings.
 
 ### 2. Core Logic Enhancements (`FilamentShield.php`)
 * **Discovery:** Updated `getDefaultPermissionKeys()` to detect the new static method `getShieldPagePermissions()` on Page classes.
@@ -38,12 +38,12 @@ To implement fine-grained permissions, add the following method to your Filament
 ```php
 public static function getShieldPagePermissions(): array
 {
-    return ['view', 'editAllSettings', 'importZeusExcel', 'insertSick'];
+    return ['view', 'editAllSettings', 'example2', 'example3'];
 }
 
 
 // In the Page Class
-if ($this->canShield('insertSick')) {
+if ($this->canShield('editAllSettings')) {
     // Perform restricted action
 }
 
@@ -78,24 +78,18 @@ Instead of checking permissions individually in the view, you can now pass the e
 use BezhanSalleh\FilamentShield\Traits\HasInjectedShieldPermissions;
 use Livewire\Component;
 
-class HolidayActionModal extends Component
+class ExampleLivewireComponent extends Component
 {
     use HasInjectedShieldPermissions;
 
     public function save()
     {
         // Use the injected state to authorize actions
-        if (! $this->canShield('canInsertSick')) {
+        if (! $this->canShield('editAllSettings')) {
             return;
         }
 
         // Logic for saving...
     }
 }
-```
-
-```blade
-@livewire('holiday-action-modal', [
-    'permissions' => $this->getShieldPermissions()
-])
 ```
